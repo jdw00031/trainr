@@ -159,85 +159,67 @@ namespace Trainr.Tests
         }
 
         [Fact]
-        public void ShouldEditTrainer()
+        public async Task ShouldEditTrainer()
         {
             //1. Arrange
             Trainer trainer = new Trainer("Jorge", "Diaz", "Football", "Jd1111@gmail.com", "(555)-222-2222", "Trainer1");
             trainer.Id = "1";
 
-            mockTrainerRepo.Setup(m => m.EditTrainerAsync(It.IsAny<Trainer>()));
+            mockTrainerRepo.Setup(m => m.EditTrainerAsync(It.IsAny<Trainer>())).Returns(Task.CompletedTask);
 
             //2. Act
-
-            IActionResult result = trainerScheduleController.EditTrainer(trainer);
+            IActionResult result = await trainerScheduleController.EditTrainer(trainer);
 
             //3. Assert
-
-            //Only thing we can check for is if this method was called
-
-            mockTrainerRepo.Verify
-                (m => m.EditTrainerAsync(It.IsAny<Trainer>()), Times.Once);
-
-            //What if we delete multiple players at the same time? Should we still use Times.Once?
-
+            mockTrainerRepo.Verify(m => m.EditTrainerAsync(It.IsAny<Trainer>()), Times.Once);
         }
 
         [Fact]
-        public void ShouldEditTrainerSchedule()
+        public async Task ShouldEditTrainerSchedule()
         {
             //1. Arrange
-            TrainerSchedule trainerSchedule = new TrainerSchedule(); /*[2019,8,1,1,30,00], [2019, 8, 1, 2, 00, 00], "1");*/
+            TrainerSchedule trainerSchedule = new TrainerSchedule();
             trainerSchedule.trainerScheduleID = 1;
 
-            mockTrainerScheduleRepo.Setup(m => m.EditTrainerScheduleAsync(It.IsAny<TrainerSchedule>()));
+            mockTrainerScheduleRepo.Setup(m => m.EditTrainerScheduleAsync(It.IsAny<TrainerSchedule>())).Returns(Task.CompletedTask);
 
             //2. Act
-
-            IActionResult result = trainerScheduleController.EditTrainerSchedule(trainerSchedule);
+            IActionResult result = await trainerScheduleController.EditTrainerSchedule(trainerSchedule);
 
             //3. Assert
-
-            //Only thing we can check for is if this method was called
-
-            mockTrainerScheduleRepo.Verify
-                (m => m.EditTrainerScheduleAsync(It.IsAny<TrainerSchedule>()), Times.Once);
-
-            //What if we delete multiple players at the same time? Should we still use Times.Once?
-
+            mockTrainerScheduleRepo.Verify(m => m.EditTrainerScheduleAsync(It.IsAny<TrainerSchedule>()), Times.Once);
         }
 
         [Fact]
-        public void ShouldDeleteTrainer()
+        public async Task ShouldDeleteTrainer()
         {
             //1. Arrange
             Trainer trainer = new Trainer("Jorge", "Diaz", "Football", "Jd1111@gmail.com", "(555)-222-2222", "Trainer1");
             trainer.Id = "1";
 
-            mockTrainerRepo.Setup(m => m.DeleteTrainerAsync(It.IsAny<Trainer>()));
+            mockTrainerRepo.Setup(m => m.DeleteTrainerAsync(It.IsAny<Trainer>())).Returns(Task.CompletedTask);
 
             //2. Act
-            IActionResult result = trainerScheduleController.DeleteTrainer(trainer);
+            IActionResult result = await trainerScheduleController.DeleteTrainer(trainer);
 
             //3. Assert
-            mockTrainerRepo.Verify
-                (m => m.DeleteTrainerAsync(It.IsAny<Trainer>()), Times.Once);
+            mockTrainerRepo.Verify(m => m.DeleteTrainerAsync(It.IsAny<Trainer>()), Times.Once);
         }
 
         [Fact]
-        public void ShouldDeleteTrainerSchedule()
+        public async Task ShouldDeleteTrainerSchedule()
         {
             //1. Arrange
-            TrainerSchedule trainerSchedule = new TrainerSchedule(); /*[2019,8,1,1,30,00], [2019, 8, 1, 2, 00, 00], "1");*/
+            TrainerSchedule trainerSchedule = new TrainerSchedule();
             trainerSchedule.trainerScheduleID = 1;
 
-            mockTrainerScheduleRepo.Setup(m => m.DeleteTrainerScheduleAsync(It.IsAny<TrainerSchedule>()));
+            mockTrainerScheduleRepo.Setup(m => m.DeleteTrainerScheduleAsync(It.IsAny<TrainerSchedule>())).Returns(Task.CompletedTask);
 
             //2. Act
-            IActionResult result = trainerScheduleController.DeleteTrainerSchedule(trainerSchedule);
+            IActionResult result = await trainerScheduleController.DeleteTrainerSchedule(trainerSchedule);
 
             //3. Assert
-            mockTrainerScheduleRepo.Verify
-                (m => m.DeleteTrainerScheduleAsync(It.IsAny<TrainerSchedule>()), Times.Once);
+            mockTrainerScheduleRepo.Verify(m => m.DeleteTrainerScheduleAsync(It.IsAny<TrainerSchedule>()), Times.Once);
         }
 
         [Fact]

@@ -29,46 +29,38 @@ namespace Trainr.Web.Controllers
         }
 
         [Authorize(Roles = "Athlete")]
-        public IActionResult BookTrainingSession(int trainerScheduleID)
+        public async Task<IActionResult> BookTrainingSession(int trainerScheduleID)
         {
             ViewData["ErrorMessage"] = "None";
 
-            TrainerSchedule trainerSchedule = 
+            TrainerSchedule trainerSchedule =
                 iTrainerScheduleRepo.FindTrainerSchedule(trainerScheduleID);
 
             if (!trainerSchedule.isAvailable)
             {
+                ViewData["ErrorMessage"] = "Training session requested not available Between "
+                    + trainerSchedule.trainerScheduleStartDateTime.ToString()
+                    + " " + trainerSchedule.trainerScheduleEndDateTime.ToString();
 
-                ViewData["ErrorMessage"] = "Training session requested not available Between" + 
-                    trainerSchedule.trainerScheduleStartDateTime.ToString() + " " 
-                    + trainerSchedule.trainerScheduleEndDateTime.ToString();
                 return View();
-
             }
-            else
-            {
-                string trainerID = trainerSchedule.trainerId;
-                DateTime startSessionTime = trainerSchedule.trainerScheduleStartDateTime;
-                DateTime endSessionTime = trainerSchedule.trainerScheduleEndDateTime;
-                string athleteID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-                TrainingSession trainingSession = new TrainingSession(startSessionTime,
-                    endSessionTime, athleteID, trainerID);
+            string trainerID = trainerSchedule.trainerId;
+            DateTime startSessionTime = trainerSchedule.trainerScheduleStartDateTime;
+            DateTime endSessionTime = trainerSchedule.trainerScheduleEndDateTime;
+            string athleteID = User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-                iTrainingSessionRepo.BookTrainingSessionAsync(trainingSession).Wait();
+            TrainingSession trainingSession = new TrainingSession(
+                startSessionTime, endSessionTime, athleteID, trainerID);
 
-                trainerSchedule.isAvailable = false;
-                iTrainerScheduleRepo.EditTrainerScheduleAsync(trainerSchedule).Wait();
+            await iTrainingSessionRepo.BookTrainingSessionAsync(trainingSession);
 
-                List<TrainingSession> ListOfTrainingSessions = iTrainingSessionRepo.TraniningSessionList();
+            trainerSchedule.isAvailable = false;
+            await iTrainerScheduleRepo.EditTrainerScheduleAsync(trainerSchedule);
 
-                return View("ListOfTrainingSessions", ListOfTrainingSessions);
+            List<TrainingSession> listOfTrainingSessions = iTrainingSessionRepo.TraniningSessionList();
 
-                
-
-
-            }
-            
+            return View("ListOfTrainingSessions", listOfTrainingSessions);
         }
 
         //public bool BookTrainingSessionHelper(string athleteID, DateTime requestedTrainingSessionStartDate, DateTime requestedTrainingSessionEndDate)

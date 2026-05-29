@@ -38,24 +38,21 @@ namespace Trainr.Web.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult AssignAppUsers(string submitButton, string ddlAppUsers, List<string> availableRoles, List<string> currentRoles)
-
+        public async Task<IActionResult> AssignAppUsers(string submitButton, string ddlAppUsers, List<string> availableRoles, List<string> currentRoles)
         {
             string userID = ddlAppUsers;
             ApplicationUser user = iApplicationUserRepo.FindUser(userID);
 
-
             if (submitButton == "AddRoles")
             {
-                userManager.AddToRolesAsync(user, availableRoles).Wait();
+                await userManager.AddToRolesAsync(user, availableRoles);
             }
             else if (submitButton == "RemoveRoles")
             {
-                userManager.RemoveFromRolesAsync(user, currentRoles).Wait();
+                await userManager.RemoveFromRolesAsync(user, currentRoles);
             }
 
             ViewData["AppUsers"] = new SelectList(iApplicationUserRepo.ListAllApplicationUsers(), "Id", "fullName", userID);
-
 
             return View();
         }

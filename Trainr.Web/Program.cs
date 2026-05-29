@@ -1,46 +1,38 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Trainr.Web.Data;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Trainr.Web
 {
     public class Program
     {
-        // the sole purpose of this code is to help the connect to the database
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            //CreateHostBuilder(args).Build().Run();
-            var host = CreateWebHostBuilder(args).Build();
+            var builder = WebApplication.CreateBuilder(args);
 
-            using (var scope = host.Services.CreateScope())
+            var startup = new Startup(builder.Configuration);
+            startup.ConfigureServices(builder.Services);
+
+            var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
-
                 try
                 {
-                    DbInitializer.Initialize(services).Wait();
+                    await DbInitializer.Initialize(services);
                 }
                 catch (Exception ex)
                 {
                     var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(ex, "An error occured creating the DB.");
+                    logger.LogError(ex, "An error occurred creating the DB.");
                 }
             }
 
-            host.Run();
+            startup.Configure(app, app.Environment);
 
-        } // end of main method
-
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                    .UseStartup<Startup>();
+            app.Run();
+        }
     }
 }
